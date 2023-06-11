@@ -4,22 +4,22 @@
 
 #include "plants.h"
 
-#define CHECK_PERIOD  600  // 600 = 10min
-#define ONE_SECOND    1000
+#define CHECK_PERIOD 600  // 600 = 10min
+#define ONE_SECOND 1000
 // pins to connect  moisture sensors
 #define SENSOR0 A2
 #define SENSOR1 A1
 #define SENSOR2 A0
-#define SENSOR3 
+#define SENSOR3
 #define POWER_SENSOR0 9
 #define POWER_SENSOR1 8
 #define POWER_SENSOR2 7
-#define POWER_SENSOR3 
+#define POWER_SENSOR3
 // #define MUX_ENABLE 33
 #define RELAY1 2
 #define RELAY2 3
 #define RELAY3 4
-#define RELAY4 
+#define RELAY4
 #define WATER_SENSOR_PIN 12
 
 uint16_t min10 = 0;
@@ -42,14 +42,14 @@ LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x3F, 20, 4);
 void check_status() {
   //
   // Serial.println("1 sec called");
-  Serial.print(min10);
+  // Serial.print(min10);
   // check water level in the container
   if (!digitalRead(WATER_SENSOR_PIN)) {
     disable_system = false;
-    Serial.println(" Water in the deposit");
+    // Serial.println(" Water in the deposit");
   } else {
     disable_system = true;
-    Serial.println(" No water in the deposit");
+    // Serial.println(" No water in the deposit");
   }
 
   garden.checkPump();
@@ -57,6 +57,7 @@ void check_status() {
   min10++;
 }
 
+// Character definitions
 byte pump_on[] = {0x04, 0x0E, 0x15, 0x04, 0x04, 0x04, 0x04, 0x04};
 
 byte pump_off[] = {0x00, 0x00, 0x11, 0x0A, 0x04, 0x0A, 0x11, 0x00};
@@ -103,10 +104,10 @@ void setup() {
   disable_system = false;
   pinMode(WATER_SENSOR_PIN, INPUT_PULLUP);
   // Analog pin, digital pin to relay, humidity threshold, seconds on
-  garden.addPlant(plant1, A0, RELAY1, 30, 10);
-  garden.addPlant(plant2, A3, RELAY2, 30, 10);
-  garden.addPlant(plant3, A7, RELAY3, 30, 10);
-  //garden.addPlant(plant4, A19, RELAY4, 30, 10);
+  garden.addPlant(plant1, SENSOR0, POWER_SENSOR0, RELAY1, 30, 10);
+  garden.addPlant(plant2, SENSOR1, POWER_SENSOR1, RELAY2, 30, 10);
+  garden.addPlant(plant3, SENSOR2, POWER_SENSOR2, RELAY3, 30, 10);
+  // garden.addPlant(plant4, A19, POWER_SENSOR3, RELAY4, 30, 10);
 
   // Wire.begin();
   // scan_i2c();
@@ -116,6 +117,7 @@ void setup() {
   lcd.createChar(0, pump_on);
   lcd.createChar(1, pump_off);
   check_status();
+  garden.checkPlants();
 }
 
 void loop() {
@@ -133,8 +135,8 @@ void loop() {
       print_status(1, plant2, p.humidity, p.pump_status);
       p = garden.getStatus(plant3);
       print_status(2, plant3, p.humidity, p.pump_status);
-      p = garden.getStatus(plant4);
-      print_status(3, plant4, p.humidity, p.pump_status);
+      // p = garden.getStatus(plant4);
+      // print_status(3, plant4, p.humidity, p.pump_status);
     }
   }
   // ten minutes function called here

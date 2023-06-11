@@ -34,6 +34,7 @@ class plantSet : public Moisture, public Pump {
     if (Pump::status()) {
       // pump is on, check for time elapsed
       // and turn off if time has passed
+      Serial.println(millis() - time_started);
       if ((millis() - time_started) >= (unsigned long)(duration)) {
         turnOff();
         time_started = 0;
@@ -44,12 +45,11 @@ class plantSet : public Moisture, public Pump {
   void check() {
     // Check the humidity to turn it on if required
     this->humidity = Moisture::read();
-    if ((this->humidity < threshold) && !Pump::status()) {
+    if (!Pump::status() && (this->humidity < threshold)) {
       turnOn();
       time_started = millis();
       // Serial.printf("moisture below threshold %d\n", time_started);
-      Serial.print("moisture below threshold ");
-      Serial.println(time_started);
+      Serial.println("moisture below threshold ");
     }
   }
 
@@ -58,8 +58,7 @@ class plantSet : public Moisture, public Pump {
       turnOn();
       time_started = millis();
       // Serial.printf("moisture below threshold %d\n", time_started);
-      Serial.print("moisture below threshold ");
-      Serial.println(time_started);
+      Serial.println("moisture below threshold ");
     }
   }
 };
@@ -67,11 +66,13 @@ class plantSet : public Moisture, public Pump {
 class Garden {
  private:
   plantSet* root;
+  bool any_pump_is_on;
 
  public:
   Garden();
 
-  void addPlant(String name, int pin, int relay, int threshold, int duration);
+  void addPlant(String name, int pin, int v_pin, int relay, int threshold,
+                int duration);
   void checkPlants();
   void checkPump();
   plant_status_t getStatus(String name);

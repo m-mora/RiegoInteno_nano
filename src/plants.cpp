@@ -4,22 +4,26 @@
 
 extern LiquidCrystal_I2C lcd;
 
-Garden::Garden() { root = nullptr; }
+Garden::Garden() {
+  root = nullptr;
+  this->any_pump_is_on = false;
+}
 
 /*
  * @brief create a plant
  * @param name        Name of the plant
  * @param pin         pin where the analog/humidity sensor is connected
+ * @param v_pin       pin to provide vcc to humidity sensor
  * @param relay       pin where the relay/pump is connected
  * @param threshold   humidity percentage to triger the irrigation
  * @param duration    duration in second to leave the pump on
  */
-void Garden::addPlant(String name, int pin, int relay, int threshold,
+void Garden::addPlant(String name, int pin, int v_pin, int relay, int threshold,
                       int duration) {
   plantSet *newNode = new plantSet();
-  newNode->Moisture::init(pin);
+  newNode->Moisture::init(pin, v_pin);
   newNode->Pump::init(relay);
-  newNode->duration = duration * 600000;  // stored in miliseconds
+  newNode->duration = duration * 1000;  // stored in miliseconds
   newNode->threshold = threshold;
   newNode->name = name;
   newNode->next = nullptr;
@@ -38,8 +42,11 @@ void Garden::addPlant(String name, int pin, int relay, int threshold,
 void Garden::checkPlants() {
   plantSet *temp = root;
   while (temp != nullptr) {
-    Serial.println("Check...");
-    temp->check();
+    // Serial.println("Check...");
+//    if (!any_pump_is_on) {
+      temp->check();
+//      any_pump_is_on = temp->Pump::status();
+//    }
     temp = temp->next;
   }
 }
@@ -48,6 +55,7 @@ void Garden::checkPump() {
   plantSet *temp = root;
   while (temp != nullptr) {
     temp->check_pump();
+//    any_pump_is_on = temp->Pump::status();
     temp = temp->next;
   }
 }
