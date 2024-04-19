@@ -1,4 +1,4 @@
-#include "plants.h"
+#include "garden.h"
 
 #include <LiquidCrystal_I2C.h>
 
@@ -43,10 +43,10 @@ void Garden::checkPlants() {
   plantSet *temp = root;
   while (temp != nullptr) {
     // Serial.println("Check...");
-//    if (!any_pump_is_on) {
-      temp->check();
-//      any_pump_is_on = temp->Pump::status();
-//    }
+    //    if (!any_pump_is_on) {
+    temp->check();
+    //      any_pump_is_on = temp->Pump::status();
+    //    }
     temp = temp->next;
   }
 }
@@ -55,7 +55,7 @@ void Garden::checkPump() {
   plantSet *temp = root;
   while (temp != nullptr) {
     temp->check_pump();
-//    any_pump_is_on = temp->Pump::status();
+    //    any_pump_is_on = temp->Pump::status();
     temp = temp->next;
   }
 }
